@@ -128,7 +128,7 @@ body {
 .heart-cta {
   position: absolute;
   left: 50%;
-  top: 15%;
+  top: 18%;
   transform: translate(-50%, -50%);
   z-index: 6;
   border: 0;
