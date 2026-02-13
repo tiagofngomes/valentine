@@ -119,6 +119,38 @@ body {
   animation: heart-in 1800ms cubic-bezier(0.16, 0.88, 0.2, 1) 120ms forwards;
 }
 
+.heart-source.pulse {
+  animation:
+    heart-in 1800ms cubic-bezier(0.16, 0.88, 0.2, 1) 120ms forwards,
+    heart-pulse 640ms ease-in-out 1;
+}
+
+.heart-cta {
+  position: absolute;
+  left: 50%;
+  top: 15%;
+  transform: translate(-50%, -50%);
+  z-index: 6;
+  border: 0;
+  border-radius: 999px;
+  padding: 8px 14px;
+  font: 700 14px/1 "Nunito", sans-serif;
+  text-transform: lowercase;
+  letter-spacing: 0.4px;
+  color: #7d0034;
+  background: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 8px 16px rgba(117, 0, 52, 0.18);
+  cursor: pointer;
+  transition: opacity 220ms ease, transform 220ms ease;
+  pointer-events: auto;
+}
+
+.heart-cta.hidden {
+  opacity: 0;
+  transform: translate(-50%, -46%);
+  pointer-events: none;
+}
+
 .static-petal {
   position: absolute;
   background: var(--petal, #f55385);
@@ -162,5 +194,15 @@ body {
   100% {
     opacity: 1;
     transform: translateX(-50%) scale(1);
+  }
+}
+
+@keyframes heart-pulse {
+  0%,
+  100% {
+    transform: translateX(-50%) scale(1);
+  }
+  50% {
+    transform: translateX(-50%) scale(1.11);
   }
 }

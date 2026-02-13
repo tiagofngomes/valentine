@@ -4,6 +4,7 @@ const timerEl = document.getElementById("timer");
 const sinceEl = document.getElementById("since");
 const finalNoteEl = document.querySelector(".final-note");
 const heartEl = document.getElementById("heart-source");
+const heartCtaEl = document.getElementById("heart-cta");
 const canvas = document.getElementById("petal-canvas");
 const ctx = canvas ? canvas.getContext("2d") : null;
 const audioEl = document.getElementById("bg-music");
@@ -42,6 +43,8 @@ let pileCeilingY = 0;
 let animationFrameId = 0;
 let timerIntervalId = 0;
 let isPaused = false;
+let experienceStarted = false;
+let petalsStarted = false;
 
 function updateTimer() {
   const now = new Date();
@@ -83,21 +86,6 @@ function initAudio() {
 
   audioEl.playsInline = true;
   audioEl.load();
-
-  const unlockAudio = async () => {
-    await tryPlayAudio();
-    window.removeEventListener("pointerdown", unlockAudio);
-    window.removeEventListener("touchstart", unlockAudio);
-    window.removeEventListener("click", unlockAudio);
-    window.removeEventListener("keydown", unlockAudio);
-  };
-
-  window.addEventListener("pointerdown", unlockAudio, { once: true });
-  window.addEventListener("touchstart", unlockAudio, { once: true });
-  window.addEventListener("click", unlockAudio, { once: true });
-  window.addEventListener("keydown", unlockAudio, { once: true });
-
-  tryPlayAudio();
 }
 
 function sampleHeartPoint() {
@@ -333,9 +321,11 @@ function animate(ts) {
   const wind = Math.sin(ts * 0.00034) * 0.07 + Math.cos(ts * 0.00016) * 0.04;
   smoothPileBins();
 
-  while (spawnClock >= PERF.spawnBaseMs && fallingPetals.length < PERF.maxFalling) {
-    spawnFallingPetal();
-    spawnClock -= PERF.spawnBaseMs + Math.random() * PERF.spawnJitterMs;
+  if (petalsStarted) {
+    while (spawnClock >= PERF.spawnBaseMs && fallingPetals.length < PERF.maxFalling) {
+      spawnFallingPetal();
+      spawnClock -= PERF.spawnBaseMs + Math.random() * PERF.spawnJitterMs;
+    }
   }
 
   ctx.clearRect(0, 0, width, height);
@@ -375,7 +365,30 @@ function animate(ts) {
   animationFrameId = requestAnimationFrame(animate);
 }
 
-if (!timerEl || !sinceEl || !finalNoteEl || !heartEl || !canvas || !ctx) {
+async function startExperience() {
+  if (experienceStarted) {
+    return;
+  }
+  experienceStarted = true;
+
+  if (heartEl) {
+    heartEl.classList.add("pulse");
+  }
+  if (heartCtaEl) {
+    heartCtaEl.classList.add("hidden");
+  }
+  await tryPlayAudio();
+
+  window.setTimeout(() => {
+    petalsStarted = true;
+    if (!PREFERS_REDUCED_MOTION && !animationFrameId) {
+      lastTs = 0;
+      animationFrameId = requestAnimationFrame(animate);
+    }
+  }, 420);
+}
+
+if (!timerEl || !sinceEl || !finalNoteEl || !heartEl || !heartCtaEl || !canvas || !ctx) {
   console.warn("Elementos obrigatorios nao encontrados. Verifique o HTML.");
 } else {
   updateTimer();
@@ -383,11 +396,18 @@ if (!timerEl || !sinceEl || !finalNoteEl || !heartEl || !canvas || !ctx) {
   timerIntervalId = window.setInterval(updateTimer, 1000);
   initAudio();
 
+  heartCtaEl.addEventListener("click", startExperience, { once: true });
+  heartEl.addEventListener("click", startExperience, { once: true });
+
   window.addEventListener("resize", resize);
   document.addEventListener("visibilitychange", () => {
     isPaused = document.hidden;
     if (isPaused) {
       cancelAnimationFrame(animationFrameId);
+      animationFrameId = 0;
+      return;
+    }
+    if (!petalsStarted) {
       return;
     }
     lastTs = 0;
@@ -399,8 +419,5 @@ if (!timerEl || !sinceEl || !finalNoteEl || !heartEl || !canvas || !ctx) {
   });
   window.addEventListener("load", () => {
     resize();
-    if (!PREFERS_REDUCED_MOTION) {
-      animationFrameId = requestAnimationFrame(animate);
-    }
   });
 }
