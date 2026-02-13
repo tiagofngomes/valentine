@@ -63,12 +63,17 @@ function updateSinceText() {
   sinceEl.textContent = `Volt\u00e1mos a encontrar-nos a ${formatter.format(LOVE_START)}, desde ent\u00e3o estamos juntos \u00e0:`;
 }
 
-function tryPlayAudio() {
+async function tryPlayAudio() {
   if (!audioEl) {
-    return;
+    return false;
   }
   audioEl.volume = 0.7;
-  audioEl.play().catch(() => {});
+  try {
+    await audioEl.play();
+    return true;
+  } catch (_) {
+    return false;
+  }
 }
 
 function initAudio() {
@@ -76,14 +81,21 @@ function initAudio() {
     return;
   }
 
-  const unlockAudio = () => {
-    tryPlayAudio();
+  audioEl.playsInline = true;
+  audioEl.load();
+
+  const unlockAudio = async () => {
+    await tryPlayAudio();
     window.removeEventListener("pointerdown", unlockAudio);
+    window.removeEventListener("touchstart", unlockAudio);
+    window.removeEventListener("click", unlockAudio);
     window.removeEventListener("keydown", unlockAudio);
   };
 
-  window.addEventListener("pointerdown", unlockAudio);
-  window.addEventListener("keydown", unlockAudio);
+  window.addEventListener("pointerdown", unlockAudio, { once: true });
+  window.addEventListener("touchstart", unlockAudio, { once: true });
+  window.addEventListener("click", unlockAudio, { once: true });
+  window.addEventListener("keydown", unlockAudio, { once: true });
 
   tryPlayAudio();
 }
