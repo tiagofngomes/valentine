@@ -28,6 +28,7 @@ body {
 
 .scene {
   width: min(420px, 100%);
+  transform: translateY(-10px);
 }
 
 .card {
