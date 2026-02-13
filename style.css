@@ -23,7 +23,7 @@ body {
     linear-gradient(145deg, var(--bg-a), var(--bg-b));
   display: grid;
   place-items: center;
-  padding: 14px;
+  padding: 12px;
 }
 
 .scene {
@@ -33,7 +33,7 @@ body {
 .card {
   position: relative;
   width: 100%;
-  min-height: clamp(640px, 90vh, 840px);
+  min-height: clamp(620px, 88vh, 820px);
   border-radius: 34px;
   background: var(--card);
   overflow: hidden;
@@ -45,7 +45,7 @@ body {
   position: absolute;
   left: 16px;
   right: 16px;
-  bottom: 150px;
+  bottom: 160px;
   z-index: 5;
   max-width: none;
   background: transparent;
@@ -59,7 +59,7 @@ body {
   left: 0;
   right: 0;
   top: auto;
-  bottom: 90px;
+  bottom: 100px;
   margin: 0;
   text-align: center;
   z-index: 5;
@@ -105,7 +105,7 @@ body {
 .heart-source {
   position: absolute;
   left: 50%;
-  top: 8%;
+  top: 6%;
   transform: translateX(-50%);
   width: clamp(160px, 52vw, 240px);
   aspect-ratio: 1 / 1;
